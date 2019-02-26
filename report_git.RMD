@@ -1,0 +1,122 @@
+---
+title: "GIS-Clinical Collaboration: Website Report"
+author: "Martin Gleason, MS"
+date: '`r format(Sys.Date(), "%m/%d/%Y")`'
+always_allow_html: yes
+output:
+  html_document:
+    css: pro_presentation_gis.css
+---
+```{r setup, include=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+source("me_stream_cleaning.R")
+
+library(lubridate)
+library(tidyverse)
+library(kableExtra)
+
+shooting_2017 <- medical_examiner %>%
+  filter(year(incident_date) >= 2017 & gunrelated == TRUE & age <= 26)
+  
+```
+
+## The Ask
+DCPO Halawa and Data Analyst Loftus asked if it would be possible to use [Cook County Medical Examiner Office](https://maps.cookcountyil.gov/medexammaps/) data, in addition to internal sources, to measure shooting incidents involving Department invovled youth. While that question was answered in another document, the full capability of these analytic tools could not be demonstrated due to security concerns regarding department data. This report is an attempt to more completely showcase the possibilities of GIS powered dashboards and reports.
+
+## The Lift
+The requirements for this report have not changed significantly as the following steps are still required:
+
+* Importing the data
+* Cleaning the data
+* Visualizing the data
+
+### Importing the Data 
+Importing the medical examiner's (ME) office data is simple: The [Cook County Open Data website](https://datacatalog.cookcountyil.gov) has a link that when incorporated into code of the analysis, allows for easy analysis. This data is updated daily, and because of the link, no file needs to downloaded then uploaded to the analytic code. In short, powering on the report loads the most current data into the analysis.
+
+### Cleaning Data
+Even though this data is coming from directly from the ME office's database, cleaning will still need to be done. The data is already fairly tidy, but they are organized by the rules establisehd by the ME, and contains variables that are not -- as of this writing -- of interest to the department:  
+
+```{r head, include= TRUE, echo = FALSE, warning = FALSE}
+me_original %>%
+  select(-source) %>%
+  head(n = 4) %>%
+  kable(format = "html", 
+        caption = paste0("Medical Examiner's Office Data: ", format(today(), "%m/%d/%Y"))) %>%
+  kable_styling(bootstrap_options = c("bordered", "hover", "striped", "responsive")) %>%
+  scroll_box(width = "100%")
+```
+Cleaning data is more intensive and requires more subject matter expertise. First, the data must be organized in the following manner:
+
+
+
+Put differently, when the department puts data in a table: What is tracked are columns, what is observed is a row, each cell has one observation, and each table is revolves around one kind of metric or source. This is referred to as [tidy data](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html).
+
+Once the data are tidy, missing values are addressed (per business rules), column data types (words, numbers, dates, etc) and order are set, and calculated variables, such as age or risk-level scoring, are created. The tidy format allows for quick and easy analysis of data.
+
+### Visualizing the Data
+For example, the 2017 Data Set has the following `r length(names(shooting_2017))` columns:
+*`r names(shooting_2017)`*. 
+
+Displaying all of this data in a single column is not useful. However, it can be approached in the following ways:
+
+```{r shootings_2017, echo=FALSE, include= TRUE, warning= FALSE}
+shooting_2017 %>% 
+  select(1, 4:5, 7, 8) %>%
+  head(n = 10) %>%
+  kable(format = "html", caption = "2017 Data Set: Column Selection") %>%
+  kable_styling(bootstrap_options = c("striped", "bordered", "responsive"))
+```
+
+```{r summarized, echo = FALSE, message= FALSE, include= TRUE}
+shooting_2017 %>% 
+  group_by(manner, race, gender) %>%
+  summarize(Total = n()) %>%
+  kable(format = "html", caption = "2017 Shooting Data Summarized") %>%
+  kable_styling(bootstrap_options = c("striped", "bordered", "responsive"))
+
+```
+
+```{r graph, echo = FALSE, message = FALSE, include = TRUE}
+shooting_2017 %>% 
+  group_by(manner, race, gender) %>%
+  summarize(Total = n()) %>%
+  ggplot(aes(x = manner, y = Total, fill = race)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  scale_fill_viridis_d() + 
+  labs(x = "Type of Shooting", title = "2017 Shooting Data", 
+       fill = "Race of Minor", caption = "Data source: GSST, JEMS, Clerks. Compiled by A. Loftus") + 
+  theme(plot.background = element_rect(fill = "#F5F5F5")) +
+  facet_wrap( ~ gender)
+```
+
+In short, the data can be selected for visualization, aggregated for totals, or displayed as a bar graph. With additional time, the 2018 data set and the diversion data set can be tidied into a similar "shape" which would allow for analyzing yearly trends in the same graph. In addition to tidying, the steps would include conversations on how the data is collected and stored in an Excel file.
+
+## GIS
+If a table does not include coordinates, then after the data is tidied, addresses need to be geocoded. This is a simple process that requires either access to [Google Maps](https://developers.google.com/maps/documentation/) or [another GIS provider.](https://www.arcgis.com/index.html) After it is geocoded, the addresses are represented as points on the map. These points are important for additional GIS calculations.
+
+GIS also allows for the drawing of polygons, features of a map that are of particular interest (such as neighborhood boundaries, geographic or political boundaries, forest preserve districts, etc.) In the Department's case, these polygons currently refer to CPD districts and suburban municipalities, but may one day include judicial, aldermanic, or county commissioner districts. Polygons define areas of in interest, where as points refer items of interest. 
+
+Currently, the internal collected stats have address and zip code elements in the table, which will be able to be geocoded. The Medical Examiner's (ME) office's stats already include home and incident location data. What needs to occur, then, is counting [points in a polygon](https://en.wikipedia.org/wiki/Point_in_polygon) and mapping those counts to a scale of color scale. Plotting this data on a map (technically called a chloropleth) is a relatively easy lift.
+
+### Internal Data
+
+### Medical Examiner
+
+A note about the data sets: The ME data was initially downloaded and cleaned before mapped. Their records were missing 16 location entries. In a more formal report, these missing records would be more thoroughly examined. For this proof of concept, they were simply removed from the data set.
+
+These maps are not limited to yearly intervals: Chloropleths can be based on daily, monthly, or quarterly dates. The restrictions of this level of detail is not the amount of work, but where the data will be displayed. This report was written as a webpage and printed to PDF because that level of work is relatively easy. If this report was a standard report, then in addition to being a web page, it would also be printable as a PDF. However, another option would be the creation of a dashboard.
+
+## Displaying Reports
+Using the data and methods contained in this document, creating a GIS-informed report that runs regularly would be a relatively simple task. Creating a dashboard or app to display the same data would only be marginally more intensive. The most pressing concern about a dashboard/app would be getting permission from County stakeholders to approve the use of an internal web server.
+
+The advantages of a dashboard/app would be the ability to filter the data sets and display them in real time, instead of "hard coding" results like this report. This method would increase collaboration, free up staff time for other analysis, generate less paper, and allow for easy access for all OCJ staff. A note about CFive. They may, or may not, have this capacity built in a future build. This report is not currently contained within the Statement of Work and CFive uses different methods for visualizations. Additionally, to date we have yet to see any of their forms or reports.
+
+A dashboard of the ME's data can be prototyped within a few weeks. Allyson's data cannot be displayed this way unless additional steps are taken to protect the identity of court-involved youth.
+
+## Recap and Next Steps
+The data provided by Allyson can be plotted onto a map of the city or county to reveal counts of shooting incidents. That requirement was met through the creation of this report. Minor tweaks to collection, cleaning, and visualizing need to be completed in order to ensure information integrity, and that process can begin when it is approved. ME office data is also easily accessed and visualized; furthermore, combining both data sets can be done in order to analyze gaps from either source.
+
+The next step for this ask is determining if the Department wants to focus on the development of regular, programmable reports like this draft or developing an app/dashboard. Both require roughly the same amount of work. A dashboard/app will require additional permissions from the Office of the Chief Judge and the Bureau of Technology, but this is the primary barrier to this method. 
+
+A prototype of this system can be built in a matter of weeks; however, due to the public nature of this measure, the internally collected data would need to be scrubbed of any identifying information in order to protect the identity of court involved youth. The value of this prototype, beyond a proof of concept, would be the ability to analyze a key metric for the court without having to use Excel, R, or any other data analysis tool.

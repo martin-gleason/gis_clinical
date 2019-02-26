@@ -1,0 +1,163 @@
+/* importing the following fonts: Nobile, lato. */
+
+@import url('https://fonts.googleapis.com/css?family=Nobile|Lato|Raleway');
+
+
+:root{
+	--blue: #193993;
+  --grey: #9b9292;
+  --black: #0e0705;
+  --green: #a5d3c1;
+  --gold: #eebf48;
+  --offwhite: #fffffa;
+  --notwhite: #5c5c57;
+  --whitesmoke: #F5F5F5;
+  --test: #e495e4
+;
+}
+
+body{
+	background-color: var(--whitesmoke);
+
+}
+
+.title-slide {
+	background-color: #9b9292;
+	}
+
+table {
+	background-color: var(--whitesmoke);
+
+}
+
+
+tbody tr:nth-child(even) {
+  background-color:var(--green);
+}
+
+h1{	
+	font-family: 'Raleway', sans-serif;
+	color: var(--blue);
+	font-size: 1.9em;
+	text-align: center;
+		text-rendering: optimizelegibility !important;
+	text-decoration: underline var(--blue);
+
+}
+
+h2{
+	font-family: 'Raleway', sans-serif;
+	color: var(--blue);
+	font-size: 1.75em;
+	text-align: left;
+		text-rendering: optimizelegibility !important;
+
+}
+
+h3{
+font-family: 'Raleway', sans-serif;
+	color: var(--blue);
+	text-align: left;
+	font-size: 1.5em;
+		text-rendering: optimizelegibility !important;
+}
+
+h4{
+font-family: 'Raleway', sans-serif;
+	color: var(--blue);
+	text-align: left;
+	font-size: .55em;
+		text-rendering: optimizelegibility !important;
+}
+
+ul,ol,dl,p{
+	color: var(--black);
+	font-family: 'Raleway', sans-serif;
+	font-size: 1.5rem;
+	text-align: left;
+}
+
+a{
+	color: var(--green);
+	text-decoration: underline;
+	}
+
+a:hover{
+	color: var(--gold);
+	}
+
+a:visited{
+	color: var(--black);
+}
+
+.runner {
+	background-color: #F77A00;
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ffb76b), color-stop(0%,#ffa73d), color-stop(0%,#ffffff), color-stop(10%,#ffffff), color-stop(25%,#F77A00), color-stop(100%,#F77A00));
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	height: 30px;
+	width: 100%;
+	text-align: left;
+}
+
+.image-half{
+	height: 50%;
+	width: 50%;
+}
+
+.image-quarter{
+	height: 25%;
+	width: 25%;
+}
+
+.image-ten{
+	height: 10%;
+	width: 10%;
+	}
+
+.left{
+	text-align:left !important;
+	}
+	
+.center{
+	text-align:center !important;
+	}
+	
+.	right{
+	text-align: right;
+	}
+
+.footnote{
+	color:#193993;
+	font-size: .65em;
+	font-style: italic;
+	
+}
+
+.v-middle{
+	vertical-align: middle;}
+	
+.right-code {
+  width: 38%;
+  height: 92%;
+  float: right;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.left-plot {
+  width: 60%;
+  float: left;
+  padding-left: 1%;
+}
+
+.right-plot{
+  width: 60%;
+  float: right;
+  padding-left: 2%;
+}
