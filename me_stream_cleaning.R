@@ -15,6 +15,9 @@ medical_examiner$latino <- as.logical(medical_examiner$latino)
 medical_examiner <- medical_examiner %>%
   mutate(race = if_else(latino, paste0(race, " Latino"), race))
 
+medical_examiner <- medical_examiner %>%
+  mutate(race = if_else(race == "Other Latino", paste0("Latino"), race))
+
 medical_examiner$gender <- as.factor(medical_examiner$gender)
 medical_examiner$race <- as.factor(medical_examiner$race)
 medical_examiner$manner <- medical_examiner$manner %>%
@@ -42,3 +45,4 @@ gun_death_2017_2018 %>%
 gun_death_group <- gun_death_2017_2018 %>% group_by(race, manner, gender)
 
 gun_death_group %>% summarize(n = n()) 
+

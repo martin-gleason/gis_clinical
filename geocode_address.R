@@ -8,6 +8,9 @@ con <- system.file("api_key.txt", "r")
 key <- readLines("api_key.txt", n = 1, ok = TRUE)
 register_google(key)
 
+
+court <- c(lat = 41.86767, lon = -87.68108)
+
 incidents <- read_csv("geocoding_shootings_all.csv")
 
 incidents <- incidents %>%

@@ -11,13 +11,14 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 
 source("me_stream_cleaning.R")
-
+source("me_polygons.R")
+library(leaflet)
 library(lubridate)
 library(tidyverse)
 library(kableExtra)
 
 shooting_2017 <- medical_examiner %>%
-  filter(year(incident_date) >= 2017 & gunrelated == TRUE & age <= 26)
+  filter(year(incident_date) == 2017 & gunrelated == TRUE & age <= 26)
   
 ```
 
@@ -46,27 +47,23 @@ me_original %>%
   kable_styling(bootstrap_options = c("bordered", "hover", "striped", "responsive")) %>%
   scroll_box(width = "100%")
 ```
-Cleaning data is more intensive and requires more subject matter expertise. First, the data must be organized in the following manner:
-
-
-
-Put differently, when the department puts data in a table: What is tracked are columns, what is observed is a row, each cell has one observation, and each table is revolves around one kind of metric or source. This is referred to as [tidy data](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html).
-
-Once the data are tidy, missing values are addressed (per business rules), column data types (words, numbers, dates, etc) and order are set, and calculated variables, such as age or risk-level scoring, are created. The tidy format allows for quick and easy analysis of data.
+The steps for this data set, then, include removing those variables that are of no interest and filtering results to focus on the age-range of interest to the department. Additionally, the way the ME classify's race is complicated. Race is listed as `r unique(me_original$race)`. Latino is listed as a seperate factor. For the department's needs, the ME's data needs to add Latino to race. This is a simple cleaning function in R, that creates the follow categories: `r unique(medical_examiner$race)`
 
 ### Visualizing the Data
-For example, the 2017 Data Set has the following `r length(names(shooting_2017))` columns:
-*`r names(shooting_2017)`*. 
-
-Displaying all of this data in a single column is not useful. However, it can be approached in the following ways:
+The cleaned ME dataset has following `r length(names(shooting_2017))` columns:
+*`r names(shooting_2017)`*. Displaying all of this data in a single column is not useful on paper, but because this report is web based, we can add scroll bars to the table in order to view all the entries.
 
 ```{r shootings_2017, echo=FALSE, include= TRUE, warning= FALSE}
 shooting_2017 %>% 
-  select(1, 4:5, 7, 8) %>%
   head(n = 10) %>%
-  kable(format = "html", caption = "2017 Data Set: Column Selection") %>%
-  kable_styling(bootstrap_options = c("striped", "bordered", "responsive"))
+  kable(format = "html", 
+        caption = paste0("Medical Examiner's Office Data", 
+                         format(Sys.Date(), " %m/%d/%Y"))) %>%
+  kable_styling(bootstrap_options = c("striped", "bordered", "responsive")) %>%
+  scroll_box(width = "100%")
 ```
+
+A more useful way of displaying the data is summarizing by categories:
 
 ```{r summarized, echo = FALSE, message= FALSE, include= TRUE}
 shooting_2017 %>% 
@@ -76,6 +73,8 @@ shooting_2017 %>%
   kable_styling(bootstrap_options = c("striped", "bordered", "responsive"))
 
 ```
+
+And by plotting the data.
 
 ```{r graph, echo = FALSE, message = FALSE, include = TRUE}
 shooting_2017 %>% 
@@ -90,16 +89,30 @@ shooting_2017 %>%
   facet_wrap( ~ gender)
 ```
 
-In short, the data can be selected for visualization, aggregated for totals, or displayed as a bar graph. With additional time, the 2018 data set and the diversion data set can be tidied into a similar "shape" which would allow for analyzing yearly trends in the same graph. In addition to tidying, the steps would include conversations on how the data is collected and stored in an Excel file.
+In short, the data can be selected for visualization, aggregated for totals, or displayed as a bar graph. With additional time and resources, this data can be combined with the department's internal data for more analysis and insight.
 
 ## GIS
-If a table does not include coordinates, then after the data is tidied, addresses need to be geocoded. This is a simple process that requires either access to [Google Maps](https://developers.google.com/maps/documentation/) or [another GIS provider.](https://www.arcgis.com/index.html) After it is geocoded, the addresses are represented as points on the map. These points are important for additional GIS calculations.
+Geographic Information Systems require either an address or a zipcode to be geocoded. The benefit of the ME data is that it already has the location data. When combined with additional location information (polygons), it is possible to plot data for all of the areas of interest.
 
-GIS also allows for the drawing of polygons, features of a map that are of particular interest (such as neighborhood boundaries, geographic or political boundaries, forest preserve districts, etc.) In the Department's case, these polygons currently refer to CPD districts and suburban municipalities, but may one day include judicial, aldermanic, or county commissioner districts. Polygons define areas of in interest, where as points refer items of interest. 
+Because this report is a website, the static maps become interactive. For the purposes of this report,the visualizations are relatively static -- It is possible to zoom in on particular neighborhoods -- but versions of these maps could be made with additional selection and filter criteria.
 
-Currently, the internal collected stats have address and zip code elements in the table, which will be able to be geocoded. The Medical Examiner's (ME) office's stats already include home and incident location data. What needs to occur, then, is counting [points in a polygon](https://en.wikipedia.org/wiki/Point_in_polygon) and mapping those counts to a scale of color scale. Plotting this data on a map (technically called a chloropleth) is a relatively easy lift.
+### ME Choloropeth: Incidents by Police District
+```{r me_chloro, include= TRUE, echo = FALSE, warning = FALSE}
 
-### Internal Data
+me_sf <- medical_examiner %>%
+  filter(!is.na(longitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"),
+           crs= "+proj=longlat +datum=WGS84")
+
+
+leaflet(cpd_districts) %>%
+  addTiles() %>%
+  setView(lng = -87.7, lat = 41.9, zoom = 12) %>%
+  addPolygons(color = "black",
+              fillColor = "#D3D3D3", 
+              fillOpacity = 0.1) %>%
+  addCircles(data = me_sf)
+```
 
 ### Medical Examiner
 
