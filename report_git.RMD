@@ -85,7 +85,7 @@ shooting_2017 %>%
   scale_fill_viridis_d() + 
   labs(x = "Type of Shooting", title = "2017 Shooting Data", 
        fill = "Race of Minor", 
-       caption = paste0("Data source: Cook County Medical Examiner's Office",
+       caption = paste0("Data source: Cook County Medical Examiner's Office ",
                         format(Sys.Date(), "%m/%d/%Y"))) + 
   theme(plot.background = element_rect(fill = "#F5F5F5")) +
   facet_wrap( ~ gender)
@@ -111,11 +111,11 @@ pal <- colorFactor(palette = "viridis",
                    domain = me_sf$manner)
 
 leaflet(commish_districts) %>%
-  addTiles() %>%
+  addProviderTiles("Stamen.TonerLite") %>%
   setView(lng = -87.7, lat = 41.9, zoom = 12) %>%
   addPolygons(color = "black",
               fillColor = "#D3D3D3", 
-              fillOpacity = 0.5) %>%
+              fillOpacity = 1) %>%
   addCircles(data = filter(me_sf, age <=26 &
                              age > 12 & 
                              year(incident_date) >= 2016),
