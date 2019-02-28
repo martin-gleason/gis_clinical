@@ -96,7 +96,7 @@ Geographic Information Systems require either an address or a zipcode to be geoc
 
 Because this report is a website, the static maps become interactive. For the purposes of this report,the visualizations are relatively static -- It is possible to zoom in on particular neighborhoods -- but versions of these maps could be made with additional selection and filter criteria.
 
-### ME Choloropeth: Incidents by Police District
+### ME Shooting: Incidents by Cook County Commissioner District
 ```{r me_chloro, include= TRUE, echo = FALSE, warning = FALSE}
 
 me_sf <- medical_examiner %>%
@@ -105,13 +105,14 @@ me_sf <- medical_examiner %>%
            crs= "+proj=longlat +datum=WGS84")
 
 
-leaflet(cpd_districts) %>%
+leaflet(commish_districts) %>%
   addTiles() %>%
   setView(lng = -87.7, lat = 41.9, zoom = 12) %>%
   addPolygons(color = "black",
               fillColor = "#D3D3D3", 
               fillOpacity = 0.1) %>%
-  addCircles(data = me_sf)
+  addCircles(data = me_sf,
+             fillOpacity = .1)
 ```
 
 ### Medical Examiner
