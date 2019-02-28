@@ -84,7 +84,9 @@ shooting_2017 %>%
   geom_bar(stat = "identity", position = "dodge") + 
   scale_fill_viridis_d() + 
   labs(x = "Type of Shooting", title = "2017 Shooting Data", 
-       fill = "Race of Minor", caption = "Data source: GSST, JEMS, Clerks. Compiled by A. Loftus") + 
+       fill = "Race of Minor", 
+       caption = paste0("Data source: Cook County Medical Examiner's Office",
+                        format(Sys.Date(), "%m/%d/%Y"))) + 
   theme(plot.background = element_rect(fill = "#F5F5F5")) +
   facet_wrap( ~ gender)
 ```
@@ -97,7 +99,7 @@ Geographic Information Systems require either an address or a zipcode to be geoc
 Because this report is a website, the static maps become interactive. For the purposes of this report,the visualizations are relatively static -- It is possible to zoom in on particular neighborhoods -- but versions of these maps could be made with additional selection and filter criteria.
 
 ### ME Shooting: Incidents by Cook County Commissioner District
-```{r me_chloro, include= TRUE, echo = FALSE, warning = FALSE}
+```{r me_chloro, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents 2016 - Today. Source Cook County Medical Examiner's Office"}
 
 me_sf <- medical_examiner %>%
   filter(!is.na(longitude)) %>%
@@ -105,14 +107,22 @@ me_sf <- medical_examiner %>%
            crs= "+proj=longlat +datum=WGS84")
 
 
+pal <- colorFactor(palette = "viridis",
+                   domain = me_sf$manner)
+
 leaflet(commish_districts) %>%
   addTiles() %>%
   setView(lng = -87.7, lat = 41.9, zoom = 12) %>%
   addPolygons(color = "black",
               fillColor = "#D3D3D3", 
-              fillOpacity = 0.1) %>%
-  addCircles(data = me_sf,
-             fillOpacity = .1)
+              fillOpacity = 0.5) %>%
+  addCircles(data = filter(me_sf, age <=26 &
+                             age > 12 & 
+                             year(incident_date) >= 2016),
+             color = ~pal(manner)) %>%
+  addLegend("bottomright", pal = pal,
+            value= ~me_sf$manner,
+            title = "Manner of Incident") 
 ```
 
 ### Medical Examiner
