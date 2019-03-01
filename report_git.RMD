@@ -43,7 +43,8 @@ me_original %>%
   select(-source) %>%
   head(n = 4) %>%
   kable(format = "html", 
-        caption = paste0("Medical Examiner's Office Data: ", format(today(), "%m/%d/%Y"))) %>%
+        caption = paste0("Medical Examiner's Office Data: ", 
+                         format(today(), "%m/%d/%Y"))) %>%
   kable_styling(bootstrap_options = c("bordered", "hover", "striped", "responsive")) %>%
   scroll_box(width = "100%")
 ```
@@ -91,15 +92,13 @@ shooting_2017 %>%
   facet_wrap( ~ gender)
 ```
 
-In short, the data can be selected for visualization, aggregated for totals, or displayed as a bar graph. With additional time and resources, this data can be combined with the department's internal data for more analysis and insight.
+In short, the data can be filtered, selected and summarized for [descriptive statistics](https://en.wikipedia.org/wiki/Descriptive_statistics), or displayed as a variety of graphs (bar, line, bubble, etc.)  With additional time and resources, this data can be combined with the department's internal data for more analysis and insight. Furthermore, additional time and web formating will allow for interactive graphs that would allow individual users to analyze the data in a variety of ways.
 
 ## GIS
-Geographic Information Systems require either an address or a zipcode to be geocoded. The benefit of the ME data is that it already has the location data. When combined with additional location information (polygons), it is possible to plot data for all of the areas of interest.
-
-Because this report is a website, the static maps become interactive. For the purposes of this report,the visualizations are relatively static -- It is possible to zoom in on particular neighborhoods -- but versions of these maps could be made with additional selection and filter criteria.
+Because this report is a website, the static GIS maps are interactive. For the purposes of this report,the visualizations are relatively static -- It is possible to zoom in on particular neighborhoods and have pop-ups on points -- but versions of these maps could be made with user-based selection and filter criteria. 
 
 ### ME Shooting: Incidents by Cook County Commissioner District
-```{r me_chloro, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents 2016 - Today. Source Cook County Medical Examiner's Office"}
+```{r me_commish_point, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents 2016 - Today. Source Cook County Medical Examiner's Office"}
 
 me_sf <- medical_examiner %>%
   filter(!is.na(longitude)) %>%
@@ -114,7 +113,10 @@ leaflet(commish_districts) %>%
   addProviderTiles("Stamen.TonerLite") %>%
   setView(lng = -87.7, lat = 41.9, zoom = 11) %>%
   addPolygons(color = "black",
-              fillColor = "#ADD8E600") %>%
+              fillColor = "#ADD8E600",
+              label = paste0(commish_districts$district, "\\n",
+                             commish_districts$firstname, " ", 
+                             commish_districts$lastname)) %>%
   addMarkers(lng = -87.68108, lat = 41.86767,
              label = "Cook County Juvenile Justice Center") %>%
   addCircles(data = filter(me_sf, age <=26 &
@@ -125,6 +127,11 @@ leaflet(commish_districts) %>%
             value= ~me_sf$manner,
             title = "Manner of Incident") 
 ```
+
+```{r cpd_chloro, include= TRUE, echo = FALSE, warnings = FALSE}
+
+```
+
 
 ### Medical Examiner
 
