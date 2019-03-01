@@ -114,8 +114,7 @@ leaflet(commish_districts) %>%
   addProviderTiles("Stamen.TonerLite") %>%
   setView(lng = -87.7, lat = 41.9, zoom = 11) %>%
   addPolygons(color = "black",
-              fillColor = "#D3D3D3", 
-              fillOpacity = 1) %>%
+              fillColor = "#ADD8E600") %>%
   addMarkers(lng = -87.68108, lat = 41.86767,
              label = "Cook County Juvenile Justice Center") %>%
   addCircles(data = filter(me_sf, age <=26 &
