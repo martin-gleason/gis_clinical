@@ -20,7 +20,7 @@ cpd_districts <- readOGR(cpd_geojson)
 cpd_districts_sf <- cpd_districts %>% st_as_sf()
 
 #google api key for getting chicago map
-Sys.chmod("api_key.txt", mode = "0400")
+Sys.chmod("new_xapi_key.txt", mode = "0400")
 con <- system.file("api_key.txt", "r")
 key <- readLines("api_key.txt", n = 1, ok = TRUE)
 register_google(key)
