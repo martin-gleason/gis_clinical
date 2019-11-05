@@ -28,9 +28,6 @@ medical_examiner$primarycause <- as.factor(medical_examiner$primarycause)
 
 medical_examiner$age <- as.numeric(medical_examiner$age)
 
-medical_examiner <- medical_examiner %>%
-  select(c(1, 4:5, 7, 9, 11, 12, 15:19, 20:26))
-
 medical_examiner$race %>%
   unique()
 
