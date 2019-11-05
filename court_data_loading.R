@@ -8,6 +8,7 @@ library(geojsonio)
 library(rgdal)
 library(rmapshaper)
 library(sf)
+library(here)
 
 #load table
 #Geocoding moved to geocode_address.R
@@ -19,10 +20,19 @@ cpd_districts <- readOGR(cpd_geojson)
 
 cpd_districts_sf <- cpd_districts %>% st_as_sf()
 
+con <- file.path("key.txt")
+key <- readLines(con, n = 1, ok = TRUE)
+register_google(key)
+
+x <- here("key.txt")
+readLines(x)
+
+
+Sys.chmod("new_api_key.txt", mode = "0400")
+api_key <- system.file("key.txt")
 #google api key for getting chicago map
-Sys.chmod("api_key.txt", mode = "0400")
-con <- system.file("api_key.txt", "r")
-key <- readLines("api_key.txt", n = 1, ok = TRUE)
+
+key <- readLines(con = api_key, n = 1, ok = TRUE)
 register_google(key)
 
 chicago = get_map("Chicago, IL")
