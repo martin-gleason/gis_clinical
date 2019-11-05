@@ -1,5 +1,5 @@
 ---
-title: "GIS-Clinical Collaboration: Webpage-based Report"
+title: "GIS-Clinical Collaboration: Web-based Report"
 author: "Martin Gleason, MS"
 date: '`r format(Sys.Date(), "%m/%d/%Y")`'
 always_allow_html: yes
