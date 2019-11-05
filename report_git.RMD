@@ -1,5 +1,5 @@
 ---
-title: "GIS-Clinical Collaboration: Website Report"
+title: "GIS-Clinical Collaboration: Webpage-based Report"
 author: "Martin Gleason, MS"
 date: '`r format(Sys.Date(), "%m/%d/%Y")`'
 always_allow_html: yes
@@ -98,6 +98,27 @@ In short, the data can be filtered, selected and summarized for [descriptive sta
 Because this report is a website, the static GIS maps are interactive. For the purposes of this report,the visualizations are relatively static -- It is possible to zoom in on particular neighborhoods and have pop-ups on points -- but versions of these maps could be made with user-based selection and filter criteria. 
 
 ### ME Shooting: Incidents by Cook County Commissioner District
+```{r me_commish_chloro, include= TRUE, echo = FALSE, message=FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents 2016 - Today. Source Cook County Medical Examiner's Office"}
+
+me_sf <- medical_examiner %>%
+  filter(!is.na(longitude)) %>%
+  filter(age <=26 &
+           age >= 10 &
+           year(incident_date) >= 2016) %>%
+  st_as_sf(coords = c("longitude", "latitude"),
+           crs= "+proj=longlat +datum=WGS84")
+
+cpd_districts_sf <- cpd_districts %>% st_as_sf()
+
+
+me_sf_cpd_counts <- me_sf %>%
+  st_within(cpd_districts_sf, sparse = FALSE, prepared = TRUE)
+```
+
+```{r animated_county, include = TRUE, echo = FALSE, message = FALSE, warning= FALSE}
+
+```
+
 ```{r me_commish_point, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents 2016 - Today. Source Cook County Medical Examiner's Office"}
 
 me_sf <- medical_examiner %>%
@@ -114,14 +135,15 @@ leaflet(commish_districts) %>%
   setView(lng = -87.7, lat = 41.9, zoom = 11) %>%
   addPolygons(color = "black",
               fillColor = "#ADD8E600",
-              label = paste0(commish_districts$district, "\\n",
+              label = paste0(commish_districts$district, "\n",
                              commish_districts$firstname, " ", 
                              commish_districts$lastname)) %>%
   addMarkers(lng = -87.68108, lat = 41.86767,
              label = "Cook County Juvenile Justice Center") %>%
   addCircles(data = filter(me_sf, age <=26 &
                              age > 12 & 
-                             year(incident_date) >= 2016),
+                             year(incident_date) >= 2016 & 
+                            gunrelated == TRUE),
              color = ~pal(manner)) %>%
   addLegend("bottomright", pal = pal,
             value= ~me_sf$manner,
@@ -129,6 +151,34 @@ leaflet(commish_districts) %>%
 ```
 
 ```{r cpd_chloro, include= TRUE, echo = FALSE, warnings = FALSE}
+me_sf <- medical_examiner %>%
+  filter(!is.na(longitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"),
+           crs= "+proj=longlat +datum=WGS84")
+
+
+pal <- colorFactor(palette = "viridis",
+                   domain = me_sf$race)
+
+leaflet(cpd_districts) %>%
+  addProviderTiles("Stamen.TonerLite") %>%
+  setView(lng = -87.7, lat = 41.9, zoom = 11) %>%
+  addPolygons(color = "black",
+              fillColor = "#ADD8E600",
+              label = paste0("District ", cpd_districts$dist_num,
+                             "Region ", cpd_districts$region,
+                            sep = "\n"), 
+              labelOptions = labelOptions(textsize ="12px")) %>%
+  addMarkers(lng = -87.68108, lat = 41.86767,
+             label = "Cook County Juvenile Justice Center") %>%
+  addCircles(data = filter(me_sf, age <=26 &
+                             age > 12 & 
+                             year(incident_date) >= 2016 &
+                              gunrelated == TRUE),
+             color = ~pal(race)) %>%
+  addLegend("bottomright", pal = pal,
+            value= ~me_sf$manner,
+            title = "Race of Victim") 
 
 ```
 
