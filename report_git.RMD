@@ -1,6 +1,6 @@
 ---
 title: "GIS-Clinical Collaboration: Web-based Report"
-author: "Martin Gleason, MS"
+author: "[Martin Gleason, MS](mailto:martin.a.gleason@icloud.com)"
 date: '`r format(Sys.Date(), "%m/%d/%Y")`'
 always_allow_html: yes
 output:
@@ -89,6 +89,8 @@ shooting_2017 %>%
        fill = "Race of Minor", 
        caption = paste0("Data source: Cook County Medical Examiner's Office ",
                         format(Sys.Date(), "%m/%d/%Y"))) + 
+  fill = "Race of Minor", caption = "Data source: GSST, JEMS, Clerks. Compiled by A. Loftus 2/2018") + 
+
   theme(plot.background = element_rect(fill = "#F5F5F5")) +
   facet_wrap( ~ gender)
 ```
