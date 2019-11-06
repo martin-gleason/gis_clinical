@@ -86,11 +86,9 @@ shooting_2017 %>%
   geom_bar(stat = "identity", position = "dodge") + 
   scale_fill_viridis_d() + 
   labs(x = "Type of Shooting", title = "2017 Shooting Data", 
-       fill = "Race of Minor", 
+       fill = "Race of Minor", caption = "Data source: GSST, JEMS, Clerks. Compiled by A. Loftus 2/2018")
        caption = paste0("Data source: Cook County Medical Examiner's Office ",
-                        format(Sys.Date(), "%m/%d/%Y"))) + 
-  fill = "Race of Minor", caption = "Data source: GSST, JEMS, Clerks. Compiled by A. Loftus 2/2018") + 
-
+                        format(Sys.Date(), "%m/%d/%Y")) + 
   theme(plot.background = element_rect(fill = "#F5F5F5")) +
   facet_wrap( ~ gender)
 ```
