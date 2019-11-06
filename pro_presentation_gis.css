@@ -78,7 +78,7 @@ ul,ol,dl,p{
 }
 
 a{
-	color: var(--green);
+	color: var(--blue);
 	text-decoration: underline;
 	}
 

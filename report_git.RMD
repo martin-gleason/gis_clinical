@@ -1,6 +1,6 @@
 ---
 title: "GIS-Clinical Collaboration: Website Report"
-author: "Martin Gleason, MS"
+author: "[Martin Gleason, MS](mailto:martin.a.gleason@icloud.com)"
 date: '`r format(Sys.Date(), "%m/%d/%Y")`'
 always_allow_html: yes
 output:
