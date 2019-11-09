@@ -24,22 +24,15 @@ shooting_2017 <- medical_examiner %>%
 ```
 
 ## The Ask
-DCPO Halawa and Data Analyst Loftus asked if it would be possible to use [Cook County Medical Examiner Office](https://maps.cookcountyil.gov/medexammaps/) data, in addition to internal sources, to measure shooting incidents involving Department invovled youth. While that question was answered in another document, the full capability of these analytic tools could not be demonstrated due to security concerns regarding department data. This report is an attempt to more completely showcase the possibilities of GIS powered dashboards and reports.
-
-## The Lift
-The requirements for this report have not changed significantly as the following steps are still required:
-
-* Importing the data
-* Cleaning the data
-* Visualizing the data
+DCPO Halawa and Data Analyst Loftus asked if it would be possible to use the [Cook County Medical Examiner Office](https://maps.cookcountyil.gov/medexammaps/)(ME) data to supplement the department's internal tracking of shooting incidents with department involved youth. Due to confidentiality concerns regarding department data, this report transforms the ME's data, and does not allow for the identification of specific youth. It is a prototype that can help illustrate the possibilities of GIS powered dashboards and reports within the department's constraints.
 
 ### Importing the Data 
-Importing the medical examiner's (ME) office data is simple: The [Cook County Open Data website](https://datacatalog.cookcountyil.gov) has a link that when incorporated into code of the analysis, allows for easy analysis. This data is updated daily, and because of the link, no file needs to downloaded then uploaded to the analytic code. In short, powering on the report loads the most current data into the analysis.
+Importing the medical examiner's (ME) office data is simple: The [Cook County Open Data website](https://datacatalog.cookcountyil.gov) has a link that, when incorporated into the `R` code of the report, allows for direct connection to the Open Data Portal. This eliminates the need of downloading files, and simplifies the data cleaning process.
 
 ### Cleaning Data
-Even though this data is coming from directly from the ME office's database, cleaning will still need to be done. The data is already fairly tidy, but they are organized by the rules establisehd by the ME, and contains variables that are not -- as of this writing -- of interest to the department:  
+Even though this data is coming from directly from the Medical Examiner's database, the data does need to be cleaned. Exploring the data in a tabular format assists in determining which features need to be removed or added to monitor the department's key performance indicators.
 
-```{r head, include= TRUE, echo = FALSE, warning = FALSE}
+```{r head, include= TRUE, echo = FALSE, warnings = FALSE}
 me_original %>%
   select(-source) %>%
   head(n = 4) %>%
@@ -49,10 +42,10 @@ me_original %>%
   kable_styling(bootstrap_options = c("bordered", "hover", "striped", "responsive")) %>%
   scroll_box(width = "100%")
 ```
-The steps for this data set, then, include removing those variables that are of no interest and filtering results to focus on the age-range of interest to the department. Additionally, the way the ME classify's race is complicated. Race is listed as `r unique(me_original$race)`. Latino is listed as a seperate factor. For the department's needs, the ME's data needs to add Latino to race. This is a simple cleaning function in R, that creates the follow categories: `r unique(medical_examiner$race)`
+For the department's purposes, a number of features should be removed to keep the data clean, including: the age-range of interest to the department and limiting cause of death to gun related incidents. A feature that needs to be improved is the race of the decedent. The way the ME classifies race is complicated. Race is listed as `r unique(me_original$race)`, with Latino being listed as a separate factor. For the department's needs, the ME's data needs to add Latino to race. This is a simple cleaning function in R, that creates the follow categories: `r unique(medical_examiner$race)`
 
 ### Visualizing the Data
-The cleaned ME dataset has following `r length(names(shooting_2017))` columns:
+The cleaned ME data set has following `r length(names(shooting_2017))` columns:
 *`r names(shooting_2017)`*. Displaying all of this data in a single column is not useful on paper, but because this report is web based, we can add scroll bars to the table in order to view all the entries.
 
 ```{r shootings_2017, echo=FALSE, include= TRUE, warning= FALSE}
@@ -86,47 +79,29 @@ shooting_2017 %>%
   geom_bar(stat = "identity", position = "dodge") + 
   scale_fill_viridis_d() + 
   labs(x = "Type of Shooting", title = "2017 Shooting Data", 
-       fill = "Race of Minor", caption = "Data source: GSST, JEMS, Clerks. Compiled by A. Loftus 2/2018")
-       caption = paste0("Data source: Cook County Medical Examiner's Office ",
-                        format(Sys.Date(), "%m/%d/%Y")) + 
-  theme(plot.background = element_rect(fill = "#F5F5F5")) +
+       fill = "Race of Minor", 
+       caption = paste0("Data source: Cook County Medical Examiner's Office. Compiled on ",
+                        format(Sys.Date(), "%m/%d/%Y"))) + 
+  theme(plot.background = element_rect(fill = "#F5F5F5")) + 
+  theme_minimal() +
   facet_wrap( ~ gender)
 ```
 
-In short, the data can be filtered, selected and summarized for [descriptive statistics](https://en.wikipedia.org/wiki/Descriptive_statistics), or displayed as a variety of graphs (bar, line, bubble, etc.)  With additional time and resources, this data can be combined with the department's internal data for more analysis and insight. Furthermore, additional time and web formating will allow for interactive graphs that would allow individual users to analyze the data in a variety of ways.
+In short, the data can be filtered, selected and summarized for [descriptive statistics](https://en.wikipedia.org/wiki/Descriptive_statistics), or displayed as a variety of graphs. Additionally, this data can be combined with the tracking done by the department to determine program and intervention effectiveness. Adding this type of analytical tool, while beyond the scope of this report, is well within the capability of the Office of the Chief Judge and the Department, and would add significant analytic capability at a minimal cost.
 
 ## GIS
-Because this report is a website, the static GIS maps are interactive. For the purposes of this report,the visualizations are relatively static -- It is possible to zoom in on particular neighborhoods and have pop-ups on points -- but versions of these maps could be made with user-based selection and filter criteria. 
+Utilizing Geographic Information Systems was the critical ask of this report. The ME's office already uses Cook County's GIS department to map the data.The department, however, has other geographic areas of interest; specifically, police district, judicial district, Cook County Commissioner District and a yet-to-be-defined *probation district.* 
 
-### ME Shooting: Incidents by Cook County Commissioner District
-```{r me_commish_chloro, include= TRUE, echo = FALSE, message=FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents 2016 - Today. Source Cook County Medical Examiner's Office"}
-
-me_sf <- medical_examiner %>%
-  filter(!is.na(longitude)) %>%
-  filter(age <=26 &
-           age >= 10 &
-           year(incident_date) >= 2016) %>%
-  st_as_sf(coords = c("longitude", "latitude"),
-           crs= "+proj=longlat +datum=WGS84")
-
-cpd_districts_sf <- cpd_districts %>% st_as_sf()
+It would be possible to build more interactive web reports. For example, allowing users to select the geographical boundaries to overlay on the incidents or including violent deaths that do not involve gun crimes. For this prototype, the report is limited to one series of boundaries one one data set; however, this report does allow for zooming into particular geographic locales.
 
 
-me_sf_cpd_counts <- me_sf %>%
-  st_within(cpd_districts_sf, sparse = FALSE, prepared = TRUE)
-```
-
-```{r animated_county, include = TRUE, echo = FALSE, message = FALSE, warning= FALSE}
-
-```
-
-```{r me_commish_point, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents 2016 - Today. Source Cook County Medical Examiner's Office"}
+### Cook County Shooting Incidents by Commissioner District: 2016 - Today
+```{r me_commish_point, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents by Comminsioner District: 2016 - Today. Source Cook County Medical Examiner's Office"}
 
 me_sf <- medical_examiner %>%
   filter(!is.na(longitude)) %>%
   st_as_sf(coords = c("longitude", "latitude"),
            crs= "+proj=longlat +datum=WGS84")
-
 
 pal <- colorFactor(palette = "viridis",
                    domain = me_sf$manner)
@@ -149,37 +124,6 @@ leaflet(commish_districts) %>%
   addLegend("bottomright", pal = pal,
             value= ~me_sf$manner,
             title = "Manner of Incident") 
-```
-
-```{r cpd_chloro, include= TRUE, echo = FALSE, warnings = FALSE}
-me_sf <- medical_examiner %>%
-  filter(!is.na(longitude)) %>%
-  st_as_sf(coords = c("longitude", "latitude"),
-           crs= "+proj=longlat +datum=WGS84")
-
-
-pal <- colorFactor(palette = "viridis",
-                   domain = me_sf$race)
-
-leaflet(cpd_districts) %>%
-  addProviderTiles("Stamen.TonerLite") %>%
-  setView(lng = -87.7, lat = 41.9, zoom = 11) %>%
-  addPolygons(color = "black",
-              fillColor = "#ADD8E600",
-              label = paste0("District ", cpd_districts$dist_num,
-                             "Region ", cpd_districts$region,
-                            sep = "\n"), 
-              labelOptions = labelOptions(textsize ="12px")) %>%
-  addMarkers(lng = -87.68108, lat = 41.86767,
-             label = "Cook County Juvenile Justice Center") %>%
-  addCircles(data = filter(me_sf, age <=26 &
-                             age > 12 & 
-                             year(incident_date) >= 2016 &
-                              gunrelated == TRUE),
-             color = ~pal(race)) %>%
-  addLegend("bottomright", pal = pal,
-            value= ~me_sf$manner,
-            title = "Race of Victim") 
 
 ```
 
@@ -188,18 +132,10 @@ leaflet(cpd_districts) %>%
 
 A note about the data sets: The ME data was initially downloaded and cleaned before mapped. Their records were missing 16 location entries. In a more formal report, these missing records would be more thoroughly examined. For this proof of concept, they were simply removed from the data set.
 
-These maps are not limited to yearly intervals: Chloropleths can be based on daily, monthly, or quarterly dates. The restrictions of this level of detail is not the amount of work, but where the data will be displayed. This report was written as a webpage and printed to PDF because that level of work is relatively easy. If this report was a standard report, then in addition to being a web page, it would also be printable as a PDF. However, another option would be the creation of a dashboard.
-
 ## Displaying Reports
-Using the data and methods contained in this document, creating a GIS-informed report that runs regularly would be a relatively simple task. Creating a dashboard or app to display the same data would only be marginally more intensive. The most pressing concern about a dashboard/app would be getting permission from County stakeholders to approve the use of an internal web server.
+Using the data and methods contained in this document, creating a GIS-informed report that runs regularly would be a relatively simple task. Creating a dashboard or app to display the same data would only be marginally more intensive. It would require installing `R` and `RStudio` on the Chief Judge's servers. Given that OCJ has already begun the process of deploying Linux servers to support the new case plan system, adding another Linux instance on the OCJ intranet is neither a technical nor a cost prohibitive step. The most pressing concern about a dashboard/app would be getting permission from County stakeholders to approve the use of an internal web server.
 
-The advantages of a dashboard/app would be the ability to filter the data sets and display them in real time, instead of "hard coding" results like this report. This method would increase collaboration, free up staff time for other analysis, generate less paper, and allow for easy access for all OCJ staff. A note about CFive. They may, or may not, have this capacity built in a future build. This report is not currently contained within the Statement of Work and CFive uses different methods for visualizations. Additionally, to date we have yet to see any of their forms or reports.
-
-A dashboard of the ME's data can be prototyped within a few weeks. Allyson's data cannot be displayed this way unless additional steps are taken to protect the identity of court-involved youth.
+The advantages of a dashboard/app would be the ability to filter the data sets and display them in real time, instead of "hard coding" results like this report. This method would increase collaboration, free up staff time for other analysis, generate less paper, and allow for easy access for all OCJ staff. These tools would also supplement the dashboard and report ability of the department's new case management system, [cFive](https://www.cfive.com/products/supervisor/). cFive's demonstrated dashboards, while customizable, do not have the same capabilities (GIS, importing ME data, etc) as this report. The methods demonstrated in this prototype can be directly applied to cFive's reporting structure. 
 
 ## Recap and Next Steps
-The data provided by Allyson can be plotted onto a map of the city or county to reveal counts of shooting incidents. That requirement was met through the creation of this report. Minor tweaks to collection, cleaning, and visualizing need to be completed in order to ensure information integrity, and that process can begin when it is approved. ME office data is also easily accessed and visualized; furthermore, combining both data sets can be done in order to analyze gaps from either source.
-
-The next step for this ask is determining if the Department wants to focus on the development of regular, programmable reports like this draft or developing an app/dashboard. Both require roughly the same amount of work. A dashboard/app will require additional permissions from the Office of the Chief Judge and the Bureau of Technology, but this is the primary barrier to this method. 
-
-A prototype of this system can be built in a matter of weeks; however, due to the public nature of this measure, the internally collected data would need to be scrubbed of any identifying information in order to protect the identity of court involved youth. The value of this prototype, beyond a proof of concept, would be the ability to analyze a key metric for the court without having to use Excel, R, or any other data analysis tool.
+Medical Examiner office and court data can be easily combined to track and measure shooting deaths of court involved. Collecting, cleaning, and visualizing this data was demonstrated in this prototype and can be deployed to the department shortly after cFive's reporting system goes live. Expanding this capacity into dashboards is possible with a minor addition to the OCJ's infrastructure. The primary barrier to dashboard development, is ensuring that the dashboard are not accessible to the public. While this is a technical issue that is beyond the scope of this report, the Office of the Chief Judge has already begun to deploy an additional server to host cFive's reporting services. An additional Linux server, configured to host dashboards and R functionality, would be a mid scale IT project that could dramatically increase the department's analytic capability without cost to the department's capital expenditures. Such a project is the logical next step of this analysis, and can begin once cFive's reporting feature goes live.
