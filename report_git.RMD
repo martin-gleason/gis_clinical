@@ -24,7 +24,7 @@ shooting_2017 <- medical_examiner %>%
 ```
 
 ## The Ask
-DCPO Halawa and Data Analyst Loftus asked if it would be possible to use the [Cook County Medical Examiner Office](https://maps.cookcountyil.gov/medexammaps/)(ME) data to supplement the department's internal tracking of department involved youth killed in gun-releated deaths. Due to confidentiality concerns regarding department data, this report demonstrates how the the ME's data can be transformed to support this research. It does not allow for the identification of specific youth. This report is a prototype that can help illustrate the possibilities of GIS powered reports and dashboards within the department's constraints regarding confidentiality.
+DCPO Halawa and Data Analyst Loftus asked if it would be possible to use the [Cook County Medical Examiner Office](https://maps.cookcountyil.gov/medexammaps/)(ME) data to supplement the department's internal tracking of department involved youth killed in gun-related deaths. Due to confidentiality concerns regarding department data, this report demonstrates how the the ME's data can be transformed to support this research. It does not allow for the identification of specific youth. This report is a prototype that can help illustrate the possibilities of GIS powered reports and dashboards within the department's constraints regarding confidentiality.
 
 ### Importing the Data 
 Importing the medical examiner's (ME) office data is simple task: The [Cook County Open Data website](https://datacatalog.cookcountyil.gov) has a link that, when incorporated into the `R` code of the report, allows for direct connection to the Open Data Portal. This eliminates the need of downloading files, ensures the most up to date data, and simplifies the data cleaning process.
@@ -92,10 +92,10 @@ In short, the data can be filtered, selected and summarized for [descriptive sta
 ## GIS
 Extending department capability with Geographic Information Systems (GIS) is another feature that can be added to the department's analytic capability. The ME's office already uses Cook County's GIS(CCGIS) department to map the deaths and shooting incidents; however, the department has other geographic areas of interest.  These include: police district, judicial district, Cook County Commissioner District and a yet-to-be-defined *probation district.* The [Cook County Medical Examiner Office](https://maps.cookcountyil.gov/medexammaps/)(ME) GIS dashboards present an impressive starting point for the department's own GIS enabled reports.
 
-It is well within the capacity of the department and CCGIS to build more interactive web reports. The barriers to this are policy driven, not technical. CCGIS needs sample data of at least 500 records to design our dashboards and reports, and the Office of the Chief Judge (OCJ) prefers to keep all data on it's own servers. While negotations between OCJ and CCGIS are onging, to demonstrate the basic capability of this type of analysis, this prototype report will show gun-releated incidents per Cook County Commissioner Districts
+It is well within the capacity of the department and CCGIS to build more interactive web reports. The barriers to this are policy driven, not technical. CCGIS needs sample data of at least 500 records to design our dashboards and reports, and the Office of the Chief Judge (OCJ) prefers to keep all data on it's own servers. While negotiations between OCJ and CCGIS are ongoing, to demonstrate the basic capability of this type of analysis, this prototype report will show gun-related incidents per Cook County Commissioner Districts
 
 
-### Cook County Shooting Incidents by Commissioner District: 2016 - Today
+###Shooting Incidents of 15-26 Year-Olds by Cook County Commissioner District: 2016 - Today
 ```{r me_commish_point, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents by Comminsioner District: 2016 - Today. Source Cook County Medical Examiner's Office"}
 
 me_sf <- medical_examiner %>%
