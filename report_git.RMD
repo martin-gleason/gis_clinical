@@ -97,7 +97,7 @@ Extending department capability with Geographic Information Systems (GIS) is ano
 It is well within the capacity of the department and CCGIS to build more interactive web reports. The barriers to this are policy driven, not technical. CCGIS needs sample data of at least 500 records to design our dashboards and reports, and the Office of the Chief Judge (OCJ) prefers to keep all data on it's own servers. While negotiations between OCJ and CCGIS are ongoing, to demonstrate the basic capability of this type of analysis, this prototype report will show gun-related incidents per Cook County Commissioner Districts for the department's age-range.
 
 
-###Shooting Incidents of 15-26 Year-Olds by Cook County Commissioner District: 2016 - Today
+### Shooting Incidents of 15-26 Year-Olds by Cook County Commissioner District: 2016 - Today
 ```{r me_commish_point, include= TRUE, echo = FALSE, warning = FALSE, fig.cap= "Cook County Shooting Incidents by Comminsioner District: 2016 - Today. Source Cook County Medical Examiner's Office"}
 
 me_sf <- medical_examiner %>%
