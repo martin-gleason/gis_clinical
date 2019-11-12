@@ -28,6 +28,8 @@ The purpose of this report is to answer a question posed by DCPO Halawa and Data
 
 It would violate the [Juvenile Court Act](http://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=1863&ChapterID=50) to reveal any personal data, including names or addresses, of justice involved youth. This includes sharing addresses with other county departments without the expressed permission of the Chief Judge. The work done by DCPO Halawa and Data Analyst Loftus, then, cannot be joined with the ME's data. Therefore, this report's scope has been limited to the creation of a web-based document that maps and tracks the department's key performance indicators from the ME's publicly available data. Next steps and potential barriers are also addressed, in order to make the next phase of this project "shovel-ready."
 
+A web-based version of this report can be found by following this [link](https://martin-gleason.github.io/gis_clinical/report_git.html).
+
 ### Importing the Data 
 Importing the medical examiner's (ME) office data is a simple task: The [Cook County Open Data website](https://datacatalog.cookcountyil.gov) has a link that, when incorporated into the `R` code of the report, allows for direct connection to the Open Data Portal. This eliminates the need of downloading files, ensures the most up-to-date data, and simplifies the data cleaning process.
 
